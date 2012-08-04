@@ -37,6 +37,12 @@ describe SPARQL::Client do
       @client.class.should_receive(:parse_xml_bindings)
       @client.query(@query)
     end
+    
+    it "should handle successful response with csv header" do
+      @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_CSV)
+      @client.class.should_receive(:parse_csv_bindings)
+      @client.query(@query)
+    end
 
     it "should handle successful response with overridden xml header" do
       @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_XML)

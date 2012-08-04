@@ -22,6 +22,8 @@ module SPARQL
     RESULT_XML  = 'application/sparql-results+xml'.freeze
     ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
     ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
+    RESULT_CSV = 'text/csv'.freeze
+    ACCEPT_CSV = {'Accept' => RESULT_CSV}.freeze
 
     attr_reader :url
     attr_reader :options
@@ -148,9 +150,23 @@ module SPARQL
           self.class.parse_json_bindings(response.body, nodes)
         when RESULT_XML
           self.class.parse_xml_bindings(response.body, nodes)
+        when RESULT_CSV
+          self.class.parse_csv_bindings(response.body)
         else
           parse_rdf_serialization(response, options)
       end
+    end
+    
+    def self.csv_klass
+      @csv_klass ||= (defined?(FasterCSV) ? FasterCSV : CSV)
+    end
+
+    def csv_class
+      self.class.csv_klass
+    end
+    
+    def self.parse_csv_bindings(csv)
+      csv_klass.new(response.body, :headers => true)
     end
 
     ##
