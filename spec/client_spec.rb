@@ -55,6 +55,12 @@ describe SPARQL::Client do
       @client.class.should_receive(:parse_xml_bindings)
       @client.query(@query, :content_type=>SPARQL::Client::RESULT_XML)
     end
+    
+    it "should handle successful response with overridden csv header" do
+      @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_CSV)
+      @client.class.should_receive(:parse_json_bindings)
+      @client.query(@query, :content_type=>SPARQL::Client::RESULT_JSON)
+    end
 
     it "should handle successful response with overridden plain header" do
       @client.should_receive(:get).and_yield response('text/plain')
